@@ -1,0 +1,8 @@
+Example
+=======
+
+class ComplexObject < ActiveRecord::Base
+  acts_as_dto :username, :body
+end
+
+>>  ComplexObject.first.dto.to_xml
