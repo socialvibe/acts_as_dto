@@ -11,7 +11,7 @@ svn+ssh://cjohnson@archadmin.socialvibe.com/usr/local/svn/ArchetypeMedia
 5867
 cjohnson
 has-props
-
+has-prop-mods
 svn:special svn:externals svn:needs-lock
 
 .git
