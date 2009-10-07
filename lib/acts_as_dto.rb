@@ -23,7 +23,7 @@ module ActsAsDto
 
           def initialize(obj)
             FIELDS.each do |attribute|
-              instance_variable_set("@" + attribute.to_s, obj.send(attribute))
+              instance_variable_set("@" + attribute.to_s, obj.send(attribute) rescue nil) if obj.respond_to?(attribute)
             end
           end          
           
