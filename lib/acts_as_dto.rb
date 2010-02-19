@@ -23,8 +23,14 @@ module ActsAsDto
 
           def initialize(obj)
             
-            FIELD_MAP.each do |field,func|
-              instance_variable_set("@" + field.to_s, obj.send(func)) rescue nil
+            if obj.is_a? Hash
+              FIELD_MAP.each do |field,func|
+                instance_variable_set("@" + field.to_s, obj[func]) rescue nil
+              end              
+            else
+              FIELD_MAP.each do |field,func|
+                instance_variable_set("@" + field.to_s, obj.send(func)) rescue nil
+              end
             end
           end                    
         end
