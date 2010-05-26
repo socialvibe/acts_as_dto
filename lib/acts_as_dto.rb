@@ -10,18 +10,26 @@ module ActsAsDto
     def acts_as_dto(*args)      
       options = args.extract_options!      
       options.assert_valid_keys(VALID_DTO_OPTIONS)      
-      attributes_to_define = args
+
+      field_function_map = args.inject(Hash.new) { |m,arg| arg.is_a?(Array) ? m[arg[0]] = arg[1] : m[arg] = arg; m }
+      
       dto_class_name = options.has_key?(:class_name) ? options[:class_name] : self.to_s + "DataTransferObject"
       dto_method_name = options.has_key?(:method_name) ? options[:method_name] : "dto"
       Object.module_eval(<<-EVAL, __FILE__, __LINE__)     
         class #{dto_class_name}
           include ActsAsDto::Dto
-          FIELDS = [#{attributes_to_define.map { |d| ":#{d}"}.join(",")}]
-          attr_accessor *FIELDS
+          FIELD_MAP = { #{field_function_map.map{ |field,func| ":#{field} => :#{func}" }.join(",") } }
+          attr_accessor *(FIELD_MAP.keys)
 
           def initialize(obj)
-            FIELDS.each do |attribute|
-              instance_variable_set("@" + attribute.to_s, obj.send(attribute)) rescue nil
+            if obj.is_a? Hash
+              FIELD_MAP.each do |field,func|
+                instance_variable_set("@" + field.to_s, obj[func]) rescue nil
+              end              
+            else
+              FIELD_MAP.each do |field,func|
+                instance_variable_set("@" + field.to_s, obj.send(func)) rescue nil
+              end
             end
           end                    
         end
